@@ -99,7 +99,7 @@
         required
       />
 
-      <div class="input-group mb-3">
+      <div class="input-group mb-1">
         <input
           type="password"
           name="password"
@@ -116,8 +116,14 @@
           <i class="bi bi-eye"></i>
         </button>
       </div>
+      <div id="password-requirements" class="password-requirements mb-3">
+        <small class="req" id="req-length">✗ At least 8 characters</small>
+        <small class="req" id="req-uppercase">✗ At least 1 uppercase letter</small>
+        <small class="req" id="req-number">✗ At least 1 number</small>
+        <small class="req" id="req-special">✗ At least 1 special character</small>
+      </div>
 
-      <div class="input-group mb-3">
+      <div class="input-group mb-1">
         <input
           type="password"
           name="confirmPassword"
@@ -133,6 +139,9 @@
         >
           <i class="bi bi-eye"></i>
         </button>
+      </div>
+      <div id="password-match" class="password-match mb-3">
+        <small class="req" id="req-match">✗ Passwords match</small>
       </div>
 
       <button type="submit" class="btn btn-primary w-100">Sign Up</button>

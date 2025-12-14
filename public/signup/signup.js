@@ -49,6 +49,82 @@ document.addEventListener("DOMContentLoaded", function () {
   setupPasswordToggle(passwordInput, togglePasswordBtn);
   setupPasswordToggle(confirmPasswordInput, toggleConfirmPasswordBtn);
 
+  // --- REAL-TIME PASSWORD VALIDATION ---
+  const reqLength = document.getElementById("req-length");
+  const reqUppercase = document.getElementById("req-uppercase");
+  const reqNumber = document.getElementById("req-number");
+  const reqSpecial = document.getElementById("req-special");
+  const reqMatch = document.getElementById("req-match");
+
+  function validatePasswordRealtime() {
+    const password = passwordInput ? passwordInput.value : "";
+    
+    // Check length (at least 8 characters)
+    if (password.length >= 8) {
+      reqLength.textContent = "✓ At least 8 characters";
+      reqLength.classList.add("valid");
+    } else {
+      reqLength.textContent = "✗ At least 8 characters";
+      reqLength.classList.remove("valid");
+    }
+    
+    // Check uppercase
+    if (/[A-Z]/.test(password)) {
+      reqUppercase.textContent = "✓ At least 1 uppercase letter";
+      reqUppercase.classList.add("valid");
+    } else {
+      reqUppercase.textContent = "✗ At least 1 uppercase letter";
+      reqUppercase.classList.remove("valid");
+    }
+    
+    // Check number
+    if (/[0-9]/.test(password)) {
+      reqNumber.textContent = "✓ At least 1 number";
+      reqNumber.classList.add("valid");
+    } else {
+      reqNumber.textContent = "✗ At least 1 number";
+      reqNumber.classList.remove("valid");
+    }
+    
+    // Check special character
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      reqSpecial.textContent = "✓ At least 1 special character";
+      reqSpecial.classList.add("valid");
+    } else {
+      reqSpecial.textContent = "✗ At least 1 special character";
+      reqSpecial.classList.remove("valid");
+    }
+    
+    // Check password match
+    validatePasswordMatch();
+  }
+
+  function validatePasswordMatch() {
+    const password = passwordInput ? passwordInput.value : "";
+    const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value : "";
+    
+    if (confirmPassword.length > 0 && password === confirmPassword) {
+      reqMatch.textContent = "✓ Passwords match";
+      reqMatch.classList.add("valid");
+    } else if (confirmPassword.length > 0) {
+      reqMatch.textContent = "✗ Passwords do not match";
+      reqMatch.classList.remove("valid");
+    } else {
+      reqMatch.textContent = "✗ Passwords match";
+      reqMatch.classList.remove("valid");
+    }
+  }
+
+  if (passwordInput) {
+    passwordInput.addEventListener("input", validatePasswordRealtime);
+    passwordInput.addEventListener("keyup", validatePasswordRealtime);
+  }
+  
+  if (confirmPasswordInput) {
+    confirmPasswordInput.addEventListener("input", validatePasswordMatch);
+    confirmPasswordInput.addEventListener("keyup", validatePasswordMatch);
+  }
+
   // --- MAIN FORM SUBMISSION AND VALIDATION ---
   if (signupForm && passwordInput && confirmPasswordInput && phoneInput) {
     signupForm.addEventListener("submit", async (e) => {

@@ -213,19 +213,27 @@ a:hover {
   background-color: #fff;
 }
 
-.password-requirements {
-  font-size: 14px;
-  color: #666;
-  margin-top: 5px;
+.password-requirements,
+.password-match {
+  font-size: 12px;
+  margin-left: 10px;
+  margin-top: 2px;
 }
-.password-requirements span {
+.password-requirements .req,
+.password-match .req {
   display: block;
+  color: #dc3545;
+  transition: color 0.2s ease;
+}
+.password-requirements .req.valid,
+.password-match .req.valid {
+  color: #28a745;
 }
 .valid {
-  color: green;
+  color: #28a745;
 }
 .invalid {
-  color: red;
+  color: #dc3545;
 }
 #requirements li {
   color: red;
