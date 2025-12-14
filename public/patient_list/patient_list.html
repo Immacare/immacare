@@ -83,7 +83,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="exampleModalLabel">
-                Update Patient
+                View Patient
               </h1>
               <input type="hidden" id="modal_user_id" />
               <button
@@ -176,6 +176,8 @@
                         id="email"
                         name="email"
                         tabindex="1"
+                        style="background-color: #dddddd; cursor: not-allowed"
+                        readonly
                       />
                     </div>
                   </div>
@@ -212,6 +214,8 @@
                         name="password"
                         tabindex="2"
                         placeholder="Leave blank to keep current"
+                        style="background-color: #dddddd; cursor: not-allowed"
+                        readonly
                       />
                     </div>
                   </div>
@@ -247,6 +251,8 @@
                         id="passwordconfirm"
                         name="passwordconfirm"
                         tabindex="3"
+                        style="background-color: #dddddd; cursor: not-allowed"
+                        readonly
                       />
                     </div>
                   </div>
@@ -276,18 +282,15 @@
                       >Status:</label
                     >
                     <div class="col-sm-8">
-                      <select
-                        class="form-select updateInput"
+                      <input
+                        type="text"
+                        class="form-control updateInput"
                         id="status"
                         name="status"
                         tabindex="4"
-                      >
-                        <option value="" selected disabled>
-                          Select a status
-                        </option>
-                        <option value="Active">Active</option>
-                        <option value="Inactive">Inactive</option>
-                      </select>
+                        style="background-color: #dddddd; cursor: not-allowed"
+                        readonly
+                      />
                     </div>
                   </div>
                 </div>
@@ -300,13 +303,6 @@
                 data-bs-dismiss="modal"
               >
                 Close
-              </button>
-              <button
-                type="button"
-                class="btn btn-primary"
-                onclick="updatePatient()"
-              >
-                Save changes
               </button>
             </div>
           </div>

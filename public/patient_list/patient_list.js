@@ -28,13 +28,13 @@ $(document).ready(function () {
         render: function (data, type, row) {
           return `
         <button
-          class="btn btn-warning btn-sm get-user-btn"
+          class="btn btn-info btn-sm get-user-btn"
           data-bs-toggle="modal"
           data-bs-target="#updateModal"
           data-bs-backdrop="false"
           data-user-id="${row.user_id}"
         >
-          Update
+          View
         </button>
       `;
         },

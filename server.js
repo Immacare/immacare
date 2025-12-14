@@ -5729,18 +5729,31 @@ app.post("/cancelBooking", async (req, res) => {
   try {
     const { booking_id, tag } = req.body;
 
-    const appointment = await Appointment.findById(booking_id);
+    if (!booking_id || !tag) {
+      return res.status(400).json({ message: "Missing booking_id or tag" });
+    }
+
+    // Validate tag is a valid status
+    const validStatuses = ['Booked', 'Completed', 'Cancelled', 'In Queue', 'Emergency'];
+    if (!validStatuses.includes(tag)) {
+      return res.status(400).json({ message: "Invalid status tag" });
+    }
+
+    // Use findByIdAndUpdate to avoid validation issues
+    const appointment = await Appointment.findByIdAndUpdate(
+      booking_id,
+      { status: tag },
+      { new: true, runValidators: true }
+    );
+    
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    appointment.status = tag;
-    await appointment.save();
-
-    res.json({ message: "Booking cancelled" });
+    res.json({ message: "Booking status updated successfully" });
   } catch (error) {
-    console.error("Error cancelling booking:", error);
-    return res.status(500).json({ message: "Failed to cancel booking" });
+    console.error("Error updating booking status:", error);
+    return res.status(500).json({ message: error.message || "Failed to update booking status" });
   }
 });
 

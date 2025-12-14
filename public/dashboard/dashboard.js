@@ -195,12 +195,25 @@ let dashboardInventoryChart = null;
 let dashboardHealthChart = null;
 
 /**
- * Check if user is admin and load analytics if so
+ * Check if user is admin/doctor and load analytics accordingly
  */
 function checkAdminAndLoadAnalytics() {
   $.get("/homepage", function(data) {
     if (data.role === 'admin') {
-      // Show the predictive analytics section
+      // Show the predictive analytics section for admin
+      const analyticsSection = document.getElementById('predictiveAnalyticsSection');
+      if (analyticsSection) {
+        analyticsSection.style.display = 'flex';
+      }
+      // Load the charts
+      loadDashboardAnalytics();
+    } else if (data.role === 'doctor') {
+      // Hide inventory card for doctors
+      const inventoryCard = document.getElementById('inventoryCard');
+      if (inventoryCard) {
+        inventoryCard.style.display = 'none';
+      }
+      // Show the predictive analytics section for doctor
       const analyticsSection = document.getElementById('predictiveAnalyticsSection');
       if (analyticsSection) {
         analyticsSection.style.display = 'flex';
