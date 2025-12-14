@@ -163,6 +163,12 @@ function saveUser() {
         text: "Please complete all required fields.",
         icon: "error",
       });
+    } else if (password.length < 6) {
+      Swal.fire({
+        title: "",
+        text: "Password must be at least 6 characters.",
+        icon: "error",
+      });
     } else if (password !== password2) {
       Swal.fire({
         title: "",

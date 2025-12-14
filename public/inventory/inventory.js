@@ -61,12 +61,13 @@ $(document).ready(function () {
         defaultContent: "",
         render: function (data, type, row) {
           if (type === "display") {
-            return `<input type="text" class="form-control form-control-sm inline-edit" data-id="${row.id}" data-field="unit" value="${data || ''}">`;
+            return `<input type="text" class="form-control form-control-sm inline-edit" data-id="${row.id}" data-field="unit" value="${data || ''}" oninput="this.value = this.value.replace(/[0-9]/g, '')">`;
           }
           return data;
         }
       },
       { 
+        // (A) Ending Balance of Last Delivery
         data: "beginning_balance", 
         width: "100px",
         defaultContent: "0",
@@ -78,31 +79,33 @@ $(document).ready(function () {
         }
       },
       { 
-        data: "adjustments", 
+        // (B) Stock Delivered (new stocks)
+        data: "stock_delivered", 
         width: "100px",
         defaultContent: "0",
         render: function (data, type, row) {
           if (type === "display") {
-            return `<input type="number" class="form-control form-control-sm inline-edit" data-id="${row.id}" data-field="adjustments" value="${data || 0}">`;
+            return `<input type="number" class="form-control form-control-sm inline-edit" data-id="${row.id}" data-field="stock_delivered" value="${data || 0}">`;
           }
           return data;
         }
       },
       {
+        // (C) Total Available = A + B (read-only formula)
         data: null,
         width: "100px",
         render: function (data, type, row) {
-          // (C) Total Available = A + B
           const beginningBalance = parseFloat(row.beginning_balance) || 0;
-          const adjustments = parseFloat(row.adjustments) || 0;
-          const total = beginningBalance + adjustments;
+          const stockDelivered = parseFloat(row.stock_delivered) || 0;
+          const total = beginningBalance + stockDelivered;
           if (type === "display") {
-            return `<input type="number" class="form-control form-control-sm" value="${total}" readonly disabled>`;
+            return `<input type="number" class="form-control form-control-sm bg-light" value="${total}" readonly disabled>`;
           }
           return total;
         },
       },
       { 
+        // (D) Actual Stock on Hand Now
         data: "actual_stock", 
         width: "100px",
         defaultContent: "0",
@@ -114,6 +117,7 @@ $(document).ready(function () {
         }
       },
       { 
+        // (E) Used Since Last Delivery
         data: "qty_used", 
         width: "100px",
         defaultContent: "0",
@@ -125,17 +129,7 @@ $(document).ready(function () {
         }
       },
       { 
-        data: "qty_wasted", 
-        width: "100px",
-        defaultContent: "0",
-        render: function (data, type, row) {
-          if (type === "display") {
-            return `<input type="number" class="form-control form-control-sm inline-edit" data-id="${row.id}" data-field="qty_wasted" value="${data || 0}">`;
-          }
-          return data;
-        }
-      },
-      { 
+        // (F) Number of Months Since Last Delivery
         data: "months_usage", 
         width: "100px",
         defaultContent: "0",
@@ -147,62 +141,49 @@ $(document).ready(function () {
         }
       },
       { 
-        data: "abl", 
+        // (G) ABL = E / F (read-only formula)
+        data: null, 
         width: "80px",
         defaultContent: "0",
         render: function (data, type, row) {
+          const qtyUsed = parseFloat(row.qty_used) || 0;
+          const monthsUsage = parseFloat(row.months_usage) || 0;
+          const abl = monthsUsage > 0 ? Math.round(qtyUsed / monthsUsage) : 0;
           if (type === "display") {
-            return `<input type="number" class="form-control form-control-sm inline-edit" data-id="${row.id}" data-field="abl" value="${data || 0}">`;
+            return `<input type="number" class="form-control form-control-sm bg-light" value="${abl}" readonly disabled>`;
           }
-          return data;
+          return abl;
         }
       },
       {
+        // (H) Qty Required = ABL - Ending Balance (read-only formula)
         data: null,
         width: "100px",
         render: function (data, type, row) {
-          // (I) Qty Required = ABL - Ending Balance (if negative, show 0)
-          const abl = parseFloat(row.abl) || 0;
-          const actualStock = parseFloat(row.actual_stock) || 0;
           const qtyUsed = parseFloat(row.qty_used) || 0;
-          const qtyWasted = parseFloat(row.qty_wasted) || 0;
-          const endingBalance = actualStock - qtyUsed - qtyWasted;
+          const monthsUsage = parseFloat(row.months_usage) || 0;
+          const abl = monthsUsage > 0 ? Math.round(qtyUsed / monthsUsage) : 0;
+          const actualStock = parseFloat(row.actual_stock) || 0;
+          const endingBalance = actualStock;
           const qtyRequired = abl - endingBalance;
           const value = qtyRequired > 0 ? qtyRequired : 0;
           if (type === "display") {
-            return `<input type="number" class="form-control form-control-sm" value="${value}" readonly disabled>`;
+            return `<input type="number" class="form-control form-control-sm bg-light" value="${value}" readonly disabled>`;
           }
           return value;
         },
       },
       {
-        data: null,
-        width: "80px",
-        render: function (data, type, row) {
-          // (J) Stock = D - E
-          const actualStock = parseFloat(row.actual_stock) || 0;
-          const qtyUsed = parseFloat(row.qty_used) || 0;
-          const stock = actualStock - qtyUsed;
-          if (type === "display") {
-            // Color code based on value
-            let bgClass = stock > 0 ? 'bg-success-light' : (stock < 0 ? 'bg-danger-light' : '');
-            return `<span class="stock-value ${bgClass}">${stock}</span>`;
-          }
-          return stock;
-        },
-      },
-      {
+        // (I) Ending Balance = D (Actual Stock on Hand Now)
         data: null,
         width: "100px",
         render: function (data, type, row) {
-          // (K) Ending Balance = D - E - F
           const actualStock = parseFloat(row.actual_stock) || 0;
-          const qtyUsed = parseFloat(row.qty_used) || 0;
-          const qtyWasted = parseFloat(row.qty_wasted) || 0;
-          const endingBalance = actualStock - qtyUsed - qtyWasted;
+          const endingBalance = actualStock;
           if (type === "display") {
-            // Color code based on ABL comparison
-            const abl = parseFloat(row.abl) || 0;
+            const qtyUsed = parseFloat(row.qty_used) || 0;
+            const monthsUsage = parseFloat(row.months_usage) || 0;
+            const abl = monthsUsage > 0 ? Math.round(qtyUsed / monthsUsage) : 0;
             let bgClass = '';
             if (endingBalance <= 0) {
               bgClass = 'bg-danger-light';
@@ -279,12 +260,7 @@ function saveItem() {
   const addCategory = $("#addCategory").val();
   const addUnit = $("#addUnit").val();
   const addBeginningBalance = $("#addBeginningBalance").val() || 0;
-  const addAdjustments = $("#addAdjustments").val() || 0;
   const addActualStock = $("#addActualStock").val() || 0;
-  const addQtyUsed = $("#addQtyUsed").val() || 0;
-  const addQtyWasted = $("#addQtyWasted").val() || 0;
-  const addMonthsUsage = $("#addMonthsUsage").val() || 0;
-  const addABL = $("#addABL").val() || 0;
   const addPrice = $("#addPrice").val() || 0;
 
   Swal.fire({
@@ -306,12 +282,7 @@ function saveItem() {
           addCategory,
           addUnit,
           addBeginningBalance,
-          addAdjustments,
           addActualStock,
-          addQtyUsed,
-          addQtyWasted,
-          addMonthsUsage,
-          addABL,
           addPrice,
         }),
         success: function (response) {
