@@ -5432,6 +5432,7 @@ app.post("/createAccount", async (req, res) => {
     }
 
     // Create new user (password will be automatically hashed by the model)
+    // Admin-created accounts are verified by default
     const user = new User({
       firstname,
       middlename: middlename || null,
@@ -5441,8 +5442,8 @@ app.post("/createAccount", async (req, res) => {
       email: email.toLowerCase(),
       password, // Will be hashed automatically by the model's pre-save hook
       role: role || 'patient',
-      status: status !== undefined ? (status === 1 || status === true) : true,
-      isVerified: false
+      status: status !== undefined ? (status === 1 || status === true || status === "1") : true,
+      isVerified: true
     });
 
     await user.save();
