@@ -4492,23 +4492,23 @@ app.get("/appointment-count", async (req, res) => {
  * Use Case: Display today's appointment count on dashboard
  */
 app.get("/appointment-count-today", async (req, res) => {
-  try {
-    const today = new Date();
-    const todayStr = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}-${today.getFullYear()}`;
-    
-    const count = await Appointment.countDocuments({ 
-      status: 'Booked',
-      bookingDate: todayStr
-    });
-    
-    res.send({
-      message: "Count fetched successfully",
-      total_booked_today: count,
-    });
-  } catch (error) {
-    console.error("Database error:", error);
-    return res.status(500).send({ message: "Database query failed" });
-  }
+try {
+const today = new Date();
+const todayStr = `${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}-${today.getFullYear()}`;
+  
+const count = await Appointment.countDocuments({ 
+  bookingDate: todayStr,
+  status: { $nin: ['Cancelled'] }
+});
+  
+res.send({
+  message: "Count fetched successfully",
+  total_booked_today: count,
+});
+} catch (error) {
+console.error("Database error:", error);
+return res.status(500).send({ message: "Database query failed" });
+}
 });
 
 /**
